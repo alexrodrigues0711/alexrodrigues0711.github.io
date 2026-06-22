@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Market Intel Bancário</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+      body { font-family: ui-sans-serif, system-ui, sans-serif; }
+      .tab-active { background: white; color: #1d4ed8; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-800">
+    <div id="app"></div>
+    <script>
+      window.onerror = function (msg) {
+        document.getElementById('app').innerHTML =
+          '<div style="padding:2rem;font-family:sans-serif;color:#b91c1c"><b>Erro JS:</b> ' + msg + '</div>';
+      };
+    </script>
+    <script src="/static/app.js?v=3"></script>
+  </body>
+</html>
