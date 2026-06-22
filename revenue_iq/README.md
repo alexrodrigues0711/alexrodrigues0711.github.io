@@ -19,7 +19,13 @@ python -m venv .venv
 
 ## Configuração da Groq
 
-Crie `revenue_iq/.env` a partir de `.env.example` e preencha a chave localmente:
+Configure a chave com entrada mascarada:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File revenue_iq\configure_groq.ps1
+```
+
+O script cria `revenue_iq/.env` com esta estrutura:
 
 ```text
 GROQ_API_KEY=sua_chave_local
