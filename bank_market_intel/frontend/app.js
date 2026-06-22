@@ -9,10 +9,9 @@ function destroyCharts() {
   Object.keys(charts).forEach((k) => delete charts[k]);
 }
 
-function kpiCard({ title, value, subtitle, icon, colorClass }) {
+function kpiCard({ title, value, subtitle }) {
   return `
-    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex items-start space-x-4">
-      <div class="p-3 rounded-lg ${colorClass} text-white text-xl">${icon}</div>
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
       <div>
         <p class="text-sm font-medium text-slate-500 mb-1">${title}</p>
         <h3 class="text-2xl font-bold text-slate-800">${value}</h3>
@@ -73,12 +72,6 @@ function renderDashboard(meta, banks, history, activeTab = 'geral') {
         </div>
       </div>
 
-      <div class="max-w-7xl mx-auto mb-4">
-        <div class="bg-amber-50 border border-amber-100 text-amber-900 text-sm rounded-lg px-4 py-3">
-          MVP factual: lucro, ROE (calculado) e Basileia vêm do BCB. Clientes, inadimplência, Reclame Aqui e nota de app não estão nesta versão.
-        </div>
-      </div>
-
       <div class="max-w-7xl mx-auto mb-6">
         <div class="flex space-x-1 bg-slate-200/50 p-1 rounded-xl w-fit">
           <button id="tab-geral" class="${tabClass('geral')}">Visão Geral</button>
@@ -99,9 +92,9 @@ function renderDashboard(meta, banks, history, activeTab = 'geral') {
     content.innerHTML = `
       <div class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          ${kpiCard({ title: 'Maior Lucro (Tri)', value: `R$ ${fmt(topLucro?.lucro)} Bi`, subtitle: `${topLucro?.name || '—'} (${meta.periodLabel})`, icon: '💰', colorClass: 'bg-yellow-500' })}
-          ${kpiCard({ title: 'Melhor ROE (anualizado)', value: fmt(topRoe?.roe, '%'), subtitle: `${topRoe?.name || '—'} — lucro/PL × 4`, icon: '📈', colorClass: 'bg-purple-600' })}
-          ${kpiCard({ title: 'Maior Índice Basileia', value: fmt(topBasileia?.basileia, '%'), subtitle: topBasileia?.name || '—', icon: '🛡️', colorClass: 'bg-emerald-500' })}
+          ${kpiCard({ title: 'Maior Lucro (Tri)', value: `R$ ${fmt(topLucro?.lucro)} Bi`, subtitle: `${topLucro?.name || '—'} (${meta.periodLabel})` })}
+          ${kpiCard({ title: 'Melhor ROE (anualizado)', value: fmt(topRoe?.roe, '%'), subtitle: `${topRoe?.name || '—'} — lucro/PL × 4` })}
+          ${kpiCard({ title: 'Maior Índice Basileia', value: fmt(topBasileia?.basileia, '%'), subtitle: topBasileia?.name || '—' })}
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">

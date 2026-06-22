@@ -51,12 +51,6 @@ async def meta() -> dict:
         "scope": "Conglomerado prudencial (TipoInstituicao=1)",
         "supportedMetrics": ["lucro", "roe", "basileia", "historicoLucro"],
         "lucroNote": "Lucro trimestral isolado; 2T e 4T do IF.data são acumulados semestrais e são normalizados automaticamente",
-        "unsupportedMetrics": {
-            "clientes": "Sem série pública comparável por API",
-            "inadimplencia": "Relatórios de crédito descontinuados/instáveis no IF.data",
-            "reclameAqui": "Sem API oficial",
-            "appRating": "Requer API das lojas (não incluído no MVP)",
-        },
         "banks": [cfg["name"] for cfg in BANKS.values()],
     }
 
@@ -80,7 +74,7 @@ async def banks_current(period: int | None = None) -> dict:
 @app.get("/api/banks/history")
 async def banks_history(metric: str = "lucro") -> dict:
     if metric != "lucro":
-        raise HTTPException(status_code=400, detail="Métrica não suportada no MVP")
+        raise HTTPException(status_code=400, detail="Métrica não suportada")
 
     periods = quarter_periods_up_to(await fetch_latest_available_period(), HISTORY_START)
 

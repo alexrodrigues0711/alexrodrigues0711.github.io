@@ -110,10 +110,6 @@ async def fetch_bank_snapshot(period: int, bank_key: str, bank_cfg: dict[str, st
         "lucro": lucro,
         "roe": roe,
         "basileia": round(basileia * 100, 2) if basileia is not None else None,
-        "inadimplencia": None,
-        "clientes": None,
-        "appRating": None,
-        "reclameAqui": None,
         "source": "BCB IF.data (conglomerado prudencial, relatório Resumo)",
     }
 

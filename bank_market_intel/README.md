@@ -13,12 +13,6 @@ Dashboard com **dados reais** do [BCB IF.data](https://olinda.bcb.gov.br/olinda/
 
 Bancos: **Itaú, Bradesco, BB, Santander e Nubank** (conglomerado prudencial).
 
-## O que não está no MVP
-
-- Base de clientes / market share
-- Inadimplência (>90 dias) — relatórios de crédito instáveis no IF.data
-- Reclame Aqui e nota de app — sem API oficial gratuita
-
 ## Como rodar
 
 ```bash
