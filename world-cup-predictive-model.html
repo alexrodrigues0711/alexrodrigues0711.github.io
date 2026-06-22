@@ -253,15 +253,15 @@
 
     {id:37,group:'G',date:'2026-06-15',home:T('Bélgica','BEL','🇧🇪'),away:T('Egito','EGY','🇪🇬'),real:[1,1]},
     {id:38,group:'G',date:'2026-06-15',home:T('Irã','IRN','🇮🇷'),away:T('Nova Zelândia','NZL','🇳🇿'),real:[2,2]},
-    {id:39,group:'G',date:'2026-06-21',home:T('Bélgica','BEL','🇧🇪'),away:T('Irã','IRN','🇮🇷'),real:null},
+    {id:39,group:'G',date:'2026-06-21',home:T('Bélgica','BEL','🇧🇪'),away:T('Irã','IRN','🇮🇷'),real:[0,0]},
     {id:40,group:'G',date:'2026-06-21',home:T('Nova Zelândia','NZL','🇳🇿'),away:T('Egito','EGY','🇪🇬'),real:null},
     {id:41,group:'G',date:'2026-06-27',home:T('Egito','EGY','🇪🇬'),away:T('Irã','IRN','🇮🇷'),real:null},
     {id:42,group:'G',date:'2026-06-27',home:T('Nova Zelândia','NZL','🇳🇿'),away:T('Bélgica','BEL','🇧🇪'),real:null},
 
     {id:43,group:'H',date:'2026-06-15',home:T('Espanha','ESP','🇪🇸'),away:T('Cabo Verde','CPV','🇨🇻'),real:[0,0]},
     {id:44,group:'H',date:'2026-06-15',home:T('Arábia Saudita','KSA','🇸🇦'),away:T('Uruguai','URU','🇺🇾'),real:[1,1]},
-    {id:45,group:'H',date:'2026-06-21',home:T('Espanha','ESP','🇪🇸'),away:T('Arábia Saudita','KSA','🇸🇦'),real:null},
-    {id:46,group:'H',date:'2026-06-21',home:T('Uruguai','URU','🇺🇾'),away:T('Cabo Verde','CPV','🇨🇻'),real:null},
+    {id:45,group:'H',date:'2026-06-21',home:T('Espanha','ESP','🇪🇸'),away:T('Arábia Saudita','KSA','🇸🇦'),real:[4,0]},
+    {id:46,group:'H',date:'2026-06-21',home:T('Uruguai','URU','🇺🇾'),away:T('Cabo Verde','CPV','🇨🇻'),real:[2,2]},
     {id:47,group:'H',date:'2026-06-26',home:T('Cabo Verde','CPV','🇨🇻'),away:T('Arábia Saudita','KSA','🇸🇦'),real:null},
     {id:48,group:'H',date:'2026-06-26',home:T('Uruguai','URU','🇺🇾'),away:T('Espanha','ESP','🇪🇸'),real:null},
 
@@ -418,7 +418,7 @@
         </div>`;
     }).join('');
     document.getElementById('kpisProgress').textContent =
-      `${graded.length} jogos já disputados e avaliados nesta amostra · 36 jogos agendados ainda aguardando resultado.`;
+      `${graded.length} jogos já disputados e avaliados nesta amostra · ${MATCHES.length-graded.length} jogos agendados ainda aguardando resultado.`;
   }
 
   // ---------- filters + board ----------
