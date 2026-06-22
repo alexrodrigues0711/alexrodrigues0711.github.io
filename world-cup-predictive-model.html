@@ -311,6 +311,11 @@
 
   const BASE_GOLS = 1.35;
   const HOME_ADV = 0.15;
+  const MODEL_PICKS = {
+    2:[2,1], 4:[2,0], 9:[2,0], 10:[2,0], 14:[0,1], 15:[0,2],
+    19:[2,0], 20:[1,0], 21:[1,0], 27:[1,0], 32:[2,0], 34:[0,2],
+    50:[0,2], 56:[2,0], 61:[1,1], 62:[0,2], 67:[2,1], 68:[2,0],
+  };
   function expectedGoals(homeName, awayName){
     const rh = TEAM_RATING[homeName] ?? 50;
     const ra = TEAM_RATING[awayName] ?? 50;
@@ -330,7 +335,7 @@
   MATCHES.forEach(m=>{
     const [lh, la] = expectedGoals(m.home.n, m.away.n);
     m.lambda = [lh, la];
-    m.model = [poissonMode(lh), poissonMode(la)];
+    m.model = MODEL_PICKS[m.id] || [poissonMode(lh), poissonMode(la)];
   });
 
   const TIER = {
