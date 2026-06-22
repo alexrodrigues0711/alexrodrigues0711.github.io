@@ -7,7 +7,7 @@ Dashboard de inteligência de receita com dados simulados, cálculos determinís
 1. `data/revenue_data.csv` contém 2.402 transações simuladas e reproduzíveis.
 2. `api/analytics.py` aplica filtros e calcula KPIs, séries e evidências.
 3. `api/app.py` publica os endpoints FastAPI e chama a Groq quando há uma chave.
-4. O frontend `../revenue-ai-dashboard-mockup.html` consome a API.
+4. O frontend `../revenue-ai-dashboard.html` consome a API.
 5. Sem chave ou quando a Groq está indisponível, a API retorna uma resposta demonstrativa baseada nos mesmos cálculos.
 
 ## Instalação no Windows
@@ -47,7 +47,7 @@ Ou inicie os serviços separadamente:
 .\.venv\Scripts\python.exe -m http.server 8765 --bind 127.0.0.1
 ```
 
-Dashboard: `http://127.0.0.1:8765/revenue-ai-dashboard-mockup.html`
+Dashboard: `http://127.0.0.1:8765/revenue-ai-dashboard.html`
 
 Documentação da API: `http://127.0.0.1:8000/docs`
 

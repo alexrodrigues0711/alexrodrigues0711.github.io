@@ -20,9 +20,9 @@ $site = Start-Process -FilePath $python `
     -PassThru
 
 Start-Sleep -Seconds 2
-Start-Process "http://127.0.0.1:8765/revenue-ai-dashboard-mockup.html"
+Start-Process "http://127.0.0.1:8765/revenue-ai-dashboard.html"
 
 Write-Host "RevenueIQ iniciado."
-Write-Host "Dashboard: http://127.0.0.1:8765/revenue-ai-dashboard-mockup.html"
+Write-Host "Dashboard: http://127.0.0.1:8765/revenue-ai-dashboard.html"
 Write-Host "API:       http://127.0.0.1:8000/docs"
 Write-Host "Processos:  API=$($api.Id), Site=$($site.Id)"
