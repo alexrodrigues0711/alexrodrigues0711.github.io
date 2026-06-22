@@ -28,13 +28,18 @@ class ApiTests(unittest.TestCase):
         self.assertGreater(payload["kpis"]["revenue"], 0)
 
     def test_analysis_uses_demo_without_key(self):
-        response = self.client.post(
-            "/api/analyze",
-            json={
-                "question": "Por que a receita caiu em março?",
-                "filters": {"segment": "all", "region": "brasil", "period": "12"},
-            },
-        )
+        original_key = os.environ.pop("GROQ_API_KEY", None)
+        try:
+            response = self.client.post(
+                "/api/analyze",
+                json={
+                    "question": "Por que a receita caiu em março?",
+                    "filters": {"segment": "all", "region": "brasil", "period": "12"},
+                },
+            )
+        finally:
+            if original_key is not None:
+                os.environ["GROQ_API_KEY"] = original_key
         self.assertEqual(response.status_code, 200)
         payload = response.json()
         self.assertEqual(payload["mode"], "demo")

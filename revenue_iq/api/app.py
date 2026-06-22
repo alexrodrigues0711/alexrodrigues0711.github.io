@@ -18,7 +18,7 @@ from .analytics import Filters, dashboard_snapshot, demo_analysis, evidence_cata
 
 
 ROOT = Path(__file__).resolve().parents[1]
-load_dotenv(ROOT / ".env")
+load_dotenv(ROOT / ".env", encoding="utf-8-sig")
 DATA_PATH = ROOT / "data" / "revenue_data.csv"
 DATA = load_data(DATA_PATH)
 

@@ -9,12 +9,14 @@ try {
         throw "A chave não pode ser vazia."
     }
 
-    @(
+    $lines = @(
         "GROQ_API_KEY=$plainKey"
         "GROQ_MODEL=llama-3.3-70b-versatile"
         "ALLOWED_ORIGINS=http://127.0.0.1:8765,https://alexrodrigues0711.github.io"
         "RATE_LIMIT_PER_10_MIN=30"
-    ) | Set-Content -LiteralPath (Join-Path $PSScriptRoot ".env") -Encoding utf8
+    )
+    $utf8WithoutBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllLines((Join-Path $PSScriptRoot ".env"), $lines, $utf8WithoutBom)
 
     Write-Host "Chave configurada localmente em revenue_iq/.env."
 } finally {
