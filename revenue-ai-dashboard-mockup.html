@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RevenueIQ - AI Revenue Intelligence</title>
+  <style>
+    :root {
+      --bg: #f3f5f7;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --ink: #172033;
+      --muted: #64748b;
+      --line: #dfe4ea;
+      --blue: #2f7ed8;
+      --blue-soft: #e8f1fd;
+      --green: #168363;
+      --green-soft: #e8f5ef;
+      --orange: #ed9b2d;
+      --red: #b94b56;
+      --shadow: 0 12px 28px rgba(22, 34, 51, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, select, input { font: inherit; }
+    button { color: inherit; }
+
+    .app {
+      max-width: 1440px;
+      min-height: 100vh;
+      margin: 0 auto;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar {
+      min-height: 66px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.96);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; min-width: max-content; }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 800;
+      background: linear-gradient(145deg, #172033, #2f7ed8);
+    }
+    .brand-name { font-weight: 800; letter-spacing: -0.4px; }
+    .brand-name span { color: var(--blue); }
+    .brand-context { color: var(--muted); font-size: 12px; padding-left: 10px; border-left: 1px solid var(--line); }
+
+    .filters { display: flex; align-items: center; gap: 10px; flex: 1; }
+    .filter { display: flex; align-items: center; gap: 7px; }
+    .filter label { font-size: 11px; color: var(--muted); }
+    select {
+      height: 40px;
+      min-width: 150px;
+      padding: 0 34px 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      color: var(--ink);
+      outline: none;
+    }
+    select:focus, input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
+
+    .periods { display: flex; gap: 5px; }
+    .period-btn {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 11px;
+      background: white;
+      cursor: pointer;
+      font-size: 12px;
+      transition: 0.2s ease;
+    }
+    .period-btn.active { color: #15549b; background: var(--blue-soft); border-color: #c5dcf7; font-weight: 700; }
+    .data-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+      padding: 7px 11px;
+      border-radius: 999px;
+      color: #315c24;
+      background: #eaf3df;
+      font-size: 11px;
+      line-height: 1.1;
+    }
+    .data-pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #4b8f2f; }
+
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(380px, 0.75fr); min-height: calc(100vh - 66px); }
+    .dashboard { padding: 18px; background: #fbfcfd; border-right: 1px solid var(--line); }
+    .section-title { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+    .section-title h1 { margin: 0; font-size: 20px; letter-spacing: -0.4px; }
+    .section-title p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .updated { color: var(--muted); font-size: 11px; }
+
+    .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+    .kpi {
+      min-height: 112px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--panel);
+      box-shadow: 0 3px 10px rgba(22,34,51,0.03);
+    }
+    .kpi-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 12px; }
+    .kpi-icon { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 7px; background: var(--panel-soft); }
+    .kpi-value { margin: 8px 0 4px; font-size: 24px; font-weight: 800; letter-spacing: -0.7px; }
+    .kpi-delta { font-size: 11px; color: var(--green); }
+    .kpi-delta.negative { color: var(--red); }
+
+    .grid-main { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.8fr); gap: 12px; margin-bottom: 12px; }
+    .grid-lower { display: grid; grid-template-columns: 1.05fr 1.15fr 1.1fr; gap: 12px; }
+    .card { border: 1px solid var(--line); border-radius: 13px; background: var(--panel); padding: 14px; overflow: hidden; }
+    .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    .card-title { font-size: 13px; font-weight: 750; }
+    .card-subtitle { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .legend { display: flex; gap: 12px; color: var(--muted); font-size: 10px; }
+    .legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; background: var(--blue); }
+    .legend span:last-child::before { height: 2px; vertical-align: 3px; background: var(--orange); }
+
+    .revenue-chart { position: relative; height: 290px; padding: 10px 8px 28px 44px; }
+    .chart-grid { position: absolute; left: 44px; right: 8px; top: 10px; bottom: 28px; display: flex; flex-direction: column; justify-content: space-between; }
+    .gridline { position: relative; border-top: 1px dashed #e7ebef; }
+    .gridline span { position: absolute; right: calc(100% + 8px); top: -7px; width: 35px; text-align: right; color: var(--muted); font-size: 9px; }
+    .bars { position: absolute; left: 52px; right: 14px; top: 18px; bottom: 28px; display: flex; align-items: flex-end; justify-content: space-around; gap: 7px; }
+    .bar-group { height: 100%; flex: 1; display: flex; align-items: flex-end; justify-content: center; position: relative; }
+    .bar { width: min(28px, 72%); min-height: 4px; border-radius: 5px 5px 2px 2px; background: linear-gradient(180deg, #63a8ec, var(--blue)); transition: height 0.45s ease; }
+    .bar-label { position: absolute; top: calc(100% + 7px); font-size: 9px; color: var(--muted); }
+    .target-line { position: absolute; inset: 15px 12px 31px 50px; width: calc(100% - 62px); height: calc(100% - 46px); pointer-events: none; }
+    .target-line polyline { fill: none; stroke: var(--orange); stroke-width: 2; stroke-dasharray: 5 4; vector-effect: non-scaling-stroke; }
+
+    .donut-wrap { min-height: 290px; display: grid; place-items: center; align-content: center; }
+    .donut { width: 150px; aspect-ratio: 1; border-radius: 50%; background: conic-gradient(var(--blue) 0 43%, var(--green) 43% 72%, var(--orange) 72% 90%, #9aa4af 90%); position: relative; }
+    .donut::after { content: ""; position: absolute; inset: 28px; border-radius: 50%; background: white; }
+    .donut-center { position: absolute; z-index: 1; text-align: center; }
+    .donut-center strong { display: block; font-size: 18px; }
+    .donut-center span { font-size: 9px; color: var(--muted); }
+    .channel-list { width: 100%; margin-top: 18px; display: grid; gap: 7px; }
+    .channel { display: flex; align-items: center; justify-content: space-between; font-size: 10px; }
+    .channel-name { display: flex; align-items: center; gap: 7px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); }
+
+    .region-list { display: grid; gap: 10px; margin-top: 14px; }
+    .region-row { display: grid; grid-template-columns: 60px 1fr 48px; align-items: center; gap: 8px; font-size: 10px; }
+    .track { height: 8px; border-radius: 99px; background: #eef1f4; overflow: hidden; }
+    .fill { height: 100%; border-radius: inherit; background: var(--blue); transition: width 0.4s ease; }
+
+    .table { width: 100%; border-collapse: collapse; font-size: 10px; }
+    .table th { padding: 8px 5px; color: var(--muted); font-weight: 600; text-align: left; border-bottom: 1px solid var(--line); }
+    .table td { padding: 9px 5px; border-bottom: 1px solid #edf0f2; }
+    .table tr:last-child td { border-bottom: 0; }
+    .positive { color: var(--green); font-weight: 700; }
+    .negative-text { color: var(--red); font-weight: 700; }
+
+    .scatter { height: 160px; position: relative; border-left: 1px solid #dfe4ea; border-bottom: 1px solid #dfe4ea; margin: 20px 12px 18px 26px; }
+    .bubble { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: rgba(47,126,216,.75); border: 2px solid white; box-shadow: 0 0 0 1px rgba(47,126,216,.3); }
+    .scatter-label { position: absolute; color: var(--muted); font-size: 9px; }
+    .scatter-label.x { bottom: -18px; right: 0; }
+    .scatter-label.y { top: -16px; left: -25px; }
+
+    .copilot { display: flex; flex-direction: column; min-width: 0; background: #f7f8fa; }
+    .copilot-head { padding: 17px 18px; background: white; border-bottom: 1px solid var(--line); }
+    .copilot-title { display: flex; align-items: center; gap: 8px; font-weight: 800; }
+    .ai-badge { padding: 3px 7px; border-radius: 999px; color: #205f9f; background: var(--blue-soft); font-size: 10px; }
+    .copilot-head p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+    .copilot-body { flex: 1; padding: 18px; overflow-y: auto; }
+    .question { max-width: 88%; margin: 0 0 12px auto; padding: 11px 13px; border-radius: 14px 14px 4px 14px; color: #165da8; background: #dfeeff; font-size: 12px; }
+    .answer { padding: 15px; border: 1px solid var(--line); border-radius: 14px; background: white; box-shadow: 0 4px 12px rgba(22,34,51,.04); }
+    .answer-lead { margin: 0 0 12px; font-size: 12px; line-height: 1.55; }
+    .evidence-list { display: grid; gap: 7px; padding-top: 11px; border-top: 1px solid var(--line); }
+    .evidence { display: grid; grid-template-columns: auto 1fr; gap: 7px; font-size: 10px; line-height: 1.4; }
+    .tag { align-self: start; padding: 3px 6px; border-radius: 5px; color: #795208; background: #fff2cf; font-size: 9px; font-weight: 700; }
+    .confidence { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; color: var(--muted); font-size: 9px; }
+    .confidence-track { width: 80px; height: 5px; border-radius: 9px; background: #e8edf1; overflow: hidden; }
+    .confidence-fill { width: 92%; height: 100%; background: var(--green); }
+
+    .suggestions { margin-top: 18px; }
+    .suggestions-label { margin-bottom: 8px; color: var(--muted); font-size: 10px; }
+    .suggestion {
+      width: 100%;
+      margin-bottom: 7px;
+      padding: 11px 12px;
+      border: 1px solid #cfd6dd;
+      border-radius: 10px;
+      background: white;
+      text-align: left;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+    .suggestion:hover { transform: translateY(-1px); border-color: var(--blue); color: #155fa9; box-shadow: 0 4px 10px rgba(47,126,216,.08); }
+    .insight-btn { width: 100%; margin-top: 10px; padding: 11px; border: 0; border-radius: 10px; color: white; background: var(--ink); font-weight: 700; cursor: pointer; }
+
+    .composer { display: flex; gap: 8px; padding: 14px 16px; border-top: 1px solid var(--line); background: white; }
+    .composer input { min-width: 0; flex: 1; height: 42px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; outline: none; }
+    .send { width: 42px; height: 42px; border: 0; border-radius: 10px; color: white; background: var(--blue); cursor: pointer; font-size: 18px; }
+    .prototype-note { padding: 8px 16px 12px; color: var(--muted); background: white; text-align: center; font-size: 9px; }
+
+    @media (max-width: 1050px) {
+      .topbar { flex-wrap: wrap; }
+      .filters { order: 3; width: 100%; overflow-x: auto; padding-bottom: 2px; }
+      .workspace { grid-template-columns: 1fr; }
+      .dashboard { border-right: 0; }
+      .copilot { border-top: 1px solid var(--line); }
+      .copilot-body { max-height: none; }
+    }
+
+    @media (max-width: 760px) {
+      .brand-context, .updated { display: none; }
+      .dashboard { padding: 12px; }
+      .kpis { grid-template-columns: repeat(2, 1fr); }
+      .grid-main, .grid-lower { grid-template-columns: 1fr; }
+      .filter label { display: none; }
+      select { min-width: 135px; }
+      .data-pill { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">RI</div>
+        <div class="brand-name">Revenue<span>IQ</span></div>
+        <div class="brand-context">Inteligência de receita</div>
+      </div>
+
+      <div class="filters">
+        <div class="filter">
+          <label for="segment">Segmento</label>
+          <select id="segment">
+            <option value="all">Todos os segmentos</option>
+            <option value="enterprise">Enterprise</option>
+            <option value="mid">Mid-market</option>
+            <option value="smb">SMB</option>
+          </select>
+        </div>
+        <div class="filter">
+          <label for="region">Região</label>
+          <select id="region">
+            <option value="brasil">Brasil</option>
+            <option value="sudeste">Sudeste</option>
+            <option value="sul">Sul</option>
+            <option value="nordeste">Nordeste</option>
+            <option value="centro">Centro-Oeste</option>
+          </select>
+        </div>
+        <div class="periods" aria-label="Período">
+          <button class="period-btn" data-period="6">6M</button>
+          <button class="period-btn active" data-period="12">12M</button>
+          <button class="period-btn" data-period="ytd">YTD</button>
+        </div>
+        <span class="data-pill" id="apiStatus">Dados simulados</span>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <section class="dashboard">
+        <div class="section-title">
+          <div>
+            <h1>Visão executiva</h1>
+            <p>Desempenho comercial, rentabilidade e desvios relevantes</p>
+          </div>
+          <span class="updated">Atualizado agora · BRL</span>
+        </div>
+
+        <div class="kpis">
+          <article class="kpi">
+            <div class="kpi-head"><span>Receita total</span><span class="kpi-icon">R$</span></div>
+            <div class="kpi-value" id="revenueValue">R$ 48,2M</div>
+            <div class="kpi-delta" id="revenueDelta">↗ 12,4% vs. ano anterior</div>
+          </article>
+          <article class="kpi">
+            <div class="kpi-head"><span>Margem bruta</span><span class="kpi-icon">%</span></div>
+            <div class="kpi-value" id="marginValue">34,1%</div>
+            <div class="kpi-delta negative" id="marginDelta">↘ 1,8 pp vs. meta</div>
+          </article>
+          <article class="kpi">
+            <div class="kpi-head"><span>Receita vs. meta</span><span class="kpi-icon">◎</span></div>
+            <div class="kpi-value" id="targetValue">96,3%</div>
+            <div class="kpi-delta" id="targetDelta">✓ R$ 1,8M abaixo</div>
+          </article>
+          <article class="kpi">
+            <div class="kpi-head"><span>Crescimento mensal</span><span class="kpi-icon">↗</span></div>
+            <div class="kpi-value" id="growthValue">+3,1%</div>
+            <div class="kpi-delta" id="growthDelta">↗ Acima da média</div>
+          </article>
+        </div>
+
+        <div class="grid-main">
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Evolução da receita × meta</div>
+                <div class="card-subtitle" id="chartContext">Últimos 12 meses · todos os segmentos</div>
+              </div>
+              <div class="legend"><span>Receita</span><span>Meta</span></div>
+            </div>
+            <div class="revenue-chart">
+              <div class="chart-grid">
+                <div class="gridline"><span>R$ 6M</span></div>
+                <div class="gridline"><span>R$ 4M</span></div>
+                <div class="gridline"><span>R$ 2M</span></div>
+                <div class="gridline"><span>R$ 0</span></div>
+              </div>
+              <div class="bars" id="bars"></div>
+              <svg class="target-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <polyline id="targetPolyline" points="0,70 9,67 18,64 27,60 36,57 45,54 54,50 63,48 72,44 81,40 90,36 100,31"></polyline>
+              </svg>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Receita por canal</div>
+                <div class="card-subtitle">Participação no período</div>
+              </div>
+            </div>
+            <div class="donut-wrap">
+              <div class="donut" id="channelDonut">
+                <div class="donut-center"><strong>R$ 48,2M</strong><span>receita total</span></div>
+              </div>
+              <div class="channel-list" id="channelList">
+                <div class="channel"><span class="channel-name"><i class="dot"></i>Venda direta</span><strong>43%</strong></div>
+                <div class="channel"><span class="channel-name"><i class="dot" style="background:var(--green)"></i>Parceiros</span><strong>29%</strong></div>
+                <div class="channel"><span class="channel-name"><i class="dot" style="background:var(--orange)"></i>Digital</span><strong>18%</strong></div>
+                <div class="channel"><span class="channel-name"><i class="dot" style="background:#9aa4af"></i>Outros</span><strong>10%</strong></div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="grid-lower">
+          <article class="card">
+            <div class="card-title">Receita por região</div>
+            <div class="card-subtitle">Contribuição acumulada</div>
+            <div class="region-list" id="regionBars">
+              <div class="region-row"><span>Sudeste</span><div class="track"><div class="fill" style="width:88%"></div></div><strong>42%</strong></div>
+              <div class="region-row"><span>Sul</span><div class="track"><div class="fill" style="width:62%"></div></div><strong>29%</strong></div>
+              <div class="region-row"><span>Nordeste</span><div class="track"><div class="fill" style="width:38%"></div></div><strong>18%</strong></div>
+              <div class="region-row"><span>Centro-O.</span><div class="track"><div class="fill" style="width:23%"></div></div><strong>11%</strong></div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-title">Top produtos</div>
+            <div class="card-subtitle">Receita e variação mensal</div>
+            <table class="table">
+              <thead><tr><th>Produto</th><th>Receita</th><th>Var.</th></tr></thead>
+              <tbody id="productRows">
+                <tr><td>Enterprise Pro</td><td>R$ 9,8M</td><td class="positive">+18%</td></tr>
+                <tr><td>Data Cloud</td><td>R$ 7,4M</td><td class="positive">+11%</td></tr>
+                <tr><td>Enterprise Plus</td><td>R$ 6,9M</td><td class="negative-text">−8%</td></tr>
+                <tr><td>Analytics Core</td><td>R$ 5,2M</td><td class="positive">+6%</td></tr>
+              </tbody>
+            </table>
+          </article>
+
+          <article class="card">
+            <div class="card-title">Margem × receita</div>
+            <div class="card-subtitle">Produtos · tamanho representa volume</div>
+            <div class="scatter">
+              <span class="scatter-label y">Margem</span><span class="scatter-label x">Receita →</span>
+              <i class="bubble" style="left:18%;bottom:35%;width:12px;height:12px"></i>
+              <i class="bubble" style="left:38%;bottom:67%;width:18px;height:18px;background:rgba(22,131,99,.75)"></i>
+              <i class="bubble" style="left:63%;bottom:22%;width:24px;height:24px;background:rgba(185,75,86,.72)"></i>
+              <i class="bubble" style="left:76%;bottom:72%;width:20px;height:20px"></i>
+              <i class="bubble" style="left:51%;bottom:48%;width:15px;height:15px;background:rgba(237,155,45,.8)"></i>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <aside class="copilot">
+        <div class="copilot-head">
+          <div class="copilot-title">▱ Ask Your Data <span class="ai-badge">AI</span></div>
+          <p>Perguntas em linguagem natural com evidências calculadas</p>
+        </div>
+
+        <div class="copilot-body">
+          <div class="question" id="question">Por que a receita caiu em março?</div>
+          <div class="answer">
+            <p class="answer-lead" id="answerLead"><strong>A receita caiu 8,2% em março</strong> (R$ 3,41M vs. R$ 3,72M em fevereiro). A região Sul respondeu por 63% da redução, impactada principalmente pela queda do Enterprise Plus.</p>
+            <div class="evidence-list" id="evidenceList">
+              <div class="evidence"><span class="tag">DADO</span><span>Sul: R$ 812K → R$ 630K em março (−22,4%)</span></div>
+              <div class="evidence"><span class="tag">DADO</span><span>Enterprise Plus: 47 unidades a menos vs. fevereiro</span></div>
+              <div class="evidence"><span class="tag">INSIGHT</span><span>Concentração em 2 clientes; revisar risco de churn</span></div>
+            </div>
+            <div class="confidence"><span>Confiança da análise: alta</span><div class="confidence-track"><div class="confidence-fill"></div></div></div>
+          </div>
+
+          <div class="suggestions">
+            <div class="suggestions-label">Perguntas sugeridas</div>
+            <button class="suggestion" data-question="margin">↗ Quais produtos crescem, mas perdem margem?</button>
+            <button class="suggestion" data-question="region">◎ Qual região mais contribuiu para o crescimento?</button>
+            <button class="suggestion" data-question="concentration">△ Onde há maior concentração de receita?</button>
+          </div>
+          <button class="insight-btn" id="executiveBtn">✦ Gerar insights executivos</button>
+        </div>
+
+        <form class="composer" id="composer">
+          <input id="chatInput" type="text" placeholder="Pergunte sobre os seus dados..." autocomplete="off">
+          <button class="send" type="submit" aria-label="Enviar pergunta">↑</button>
+        </form>
+        <div class="prototype-note" id="modeNote">Modo demonstrativo · configure a API para usar a Groq</div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const API_BASE = window.REVENUE_IQ_API_URL || 'http://127.0.0.1:8000';
+    const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const baseRevenue = [3.72,3.41,3.68,3.83,3.96,4.08,3.94,4.31,4.57,4.48,4.72,5.10];
+    const target = [3.70,3.78,3.84,3.91,4.01,4.10,4.22,4.31,4.39,4.52,4.66,4.82];
+
+    const segmentScale = { all: 1, enterprise: .47, mid: .31, smb: .22 };
+    const regionScale = { brasil: 1, sudeste: .42, sul: .29, nordeste: .18, centro: .11 };
+
+    const insights = {
+      default: {
+        question: 'Por que a receita caiu em março?',
+        lead: '<strong>A receita caiu 8,2% em março</strong> (R$ 3,41M vs. R$ 3,72M em fevereiro). A região Sul respondeu por 63% da redução, impactada principalmente pela queda do Enterprise Plus.',
+        evidence: [
+          ['DADO','Sul: R$ 812K → R$ 630K em março (−22,4%)'],
+          ['DADO','Enterprise Plus: 47 unidades a menos vs. fevereiro'],
+          ['INSIGHT','Concentração em 2 clientes; revisar risco de churn']
+        ]
+      },
+      margin: {
+        question: 'Quais produtos crescem, mas perdem margem?',
+        lead: '<strong>Dois produtos combinam crescimento com compressão de margem.</strong> Data Cloud cresceu 11%, mas perdeu 2,4 pp; Analytics Core cresceu 6% e perdeu 1,1 pp.',
+        evidence: [
+          ['DADO','Data Cloud: receita +11%; margem 38,2% → 35,8%'],
+          ['DADO','Analytics Core: receita +6%; margem 31,4% → 30,3%'],
+          ['INSIGHT','Descontos no canal Parceiros explicam 58% da redução']
+        ]
+      },
+      region: {
+        question: 'Qual região mais contribuiu para o crescimento?',
+        lead: '<strong>O Sudeste liderou o crescimento acumulado</strong>, adicionando R$ 2,1M no período e respondendo por 48% da expansão total.',
+        evidence: [
+          ['DADO','Sudeste: R$ 18,2M → R$ 20,3M (+11,5%)'],
+          ['DADO','Venda direta respondeu por R$ 1,4M do incremento'],
+          ['INSIGHT','Enterprise Pro foi o principal vetor de crescimento']
+        ]
+      },
+      concentration: {
+        question: 'Onde há maior concentração de receita?',
+        lead: '<strong>A maior concentração está no segmento Enterprise da região Sudeste.</strong> Os cinco maiores clientes representam 36% da receita desse recorte.',
+        evidence: [
+          ['DADO','Top 5 clientes: R$ 7,3M de R$ 20,3M'],
+          ['DADO','Cliente Atlas representa sozinho 9,4% do recorte'],
+          ['INSIGHT','Monitorar renovação de 2 contratos nos próximos 60 dias']
+        ]
+      },
+      executive: {
+        question: 'Quais são os principais insights executivos?',
+        lead: '<strong>A receita cresce acima do ano anterior, mas a margem exige atenção.</strong> O avanço está concentrado no Sudeste e em Enterprise Pro, enquanto descontos e dependência de grandes clientes elevam o risco.',
+        evidence: [
+          ['OPORT.','Receita acumulada +12,4%; Enterprise Pro lidera expansão'],
+          ['RISCO','Margem 1,8 pp abaixo da meta, pressionada por descontos'],
+          ['AÇÃO','Revisar preços no canal Parceiros e contratos concentrados']
+        ]
+      }
+    };
+
+    let activePeriod = 12;
+
+    function formatMoney(value) {
+      return 'R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1}) + 'M';
+    }
+
+    function formatBRL(value) {
+      const absolute = Math.abs(value);
+      if (absolute >= 1000000) return 'R$ ' + (value/1000000).toLocaleString('pt-BR', {minimumFractionDigits:1, maximumFractionDigits:1}) + 'M';
+      if (absolute >= 1000) return 'R$ ' + (value/1000).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0}) + 'K';
+      return value.toLocaleString('pt-BR', {style:'currency',currency:'BRL',maximumFractionDigits:0});
+    }
+
+    function renderRevenueChart(labels, values, targetValues, context) {
+      const max = Math.max(...values, ...targetValues, 1) * 1.15;
+      const bars = document.getElementById('bars');
+      bars.innerHTML = values.map((value, i) => `
+        <div class="bar-group" title="${labels[i]}: ${formatBRL(value)}">
+          <div class="bar" style="height:${Math.max(8, value/max*100)}%"></div>
+          <span class="bar-label">${labels[i]}</span>
+        </div>`).join('');
+
+      const points = targetValues.map((value, i) => {
+        const x = targetValues.length === 1 ? 0 : i/(targetValues.length-1)*100;
+        const y = 100 - value/max*100;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(' ');
+      document.getElementById('targetPolyline').setAttribute('points', points);
+      document.getElementById('chartContext').textContent = context;
+    }
+
+    function renderLocalDashboard() {
+      const segment = document.getElementById('segment').value;
+      const region = document.getElementById('region').value;
+      const scale = segmentScale[segment] * regionScale[region];
+      const count = activePeriod === 'ytd' ? 8 : Number(activePeriod);
+      const start = 12 - count;
+      const values = baseRevenue.slice(start).map(v => v * scale);
+      const labels = months.slice(start);
+      const targetValues = target.slice(start).map(v => v * scale);
+      const total = values.reduce((sum, value) => sum + value, 0);
+      const context = `${count} meses · ${document.getElementById('segment').selectedOptions[0].text.toLowerCase()} · ${document.getElementById('region').selectedOptions[0].text}`;
+      renderRevenueChart(labels, values.map(v => v*1000000), targetValues.map(v => v*1000000), context);
+      document.getElementById('revenueValue').textContent = formatMoney(total);
+      document.querySelector('.donut-center strong').textContent = formatMoney(total);
+
+      const marginBase = segment === 'enterprise' ? 31.8 : segment === 'smb' ? 38.6 : 34.1;
+      document.getElementById('marginValue').textContent = marginBase.toLocaleString('pt-BR', {minimumFractionDigits:1}) + '%';
+      document.getElementById('targetValue').textContent = (94.8 + scale*1.5).toLocaleString('pt-BR', {minimumFractionDigits:1, maximumFractionDigits:1}) + '%';
+    }
+
+    function applySnapshot(snapshot) {
+      const kpis = snapshot.kpis;
+      const selectedSegment = document.getElementById('segment').selectedOptions[0].text.toLowerCase();
+      const selectedRegion = document.getElementById('region').selectedOptions[0].text;
+      const periodLabel = snapshot.monthly.length + ' meses';
+
+      document.getElementById('revenueValue').textContent = formatBRL(kpis.revenue);
+      document.getElementById('revenueDelta').textContent = `${kpis.revenue_growth >= 0 ? '↗' : '↘'} ${Math.abs(kpis.revenue_growth).toLocaleString('pt-BR')}% vs. período anterior`;
+      document.getElementById('revenueDelta').classList.toggle('negative', kpis.revenue_growth < 0);
+      document.getElementById('marginValue').textContent = kpis.gross_margin.toLocaleString('pt-BR', {minimumFractionDigits:1}) + '%';
+      document.getElementById('targetValue').textContent = kpis.target_attainment.toLocaleString('pt-BR', {minimumFractionDigits:1}) + '%';
+      document.getElementById('targetDelta').textContent = `${kpis.target_gap >= 0 ? '✓' : '↘'} ${formatBRL(Math.abs(kpis.target_gap))} ${kpis.target_gap >= 0 ? 'acima' : 'abaixo'}`;
+      document.getElementById('growthValue').textContent = `${kpis.monthly_growth >= 0 ? '+' : ''}${kpis.monthly_growth.toLocaleString('pt-BR', {minimumFractionDigits:1})}%`;
+      document.getElementById('growthDelta').textContent = kpis.monthly_growth >= 0 ? '↗ Crescimento no último mês' : '↘ Queda no último mês';
+
+      const labels = snapshot.monthly.map(item => months[Number(item.month.slice(5,7))-1]);
+      renderRevenueChart(labels, snapshot.monthly.map(item => item.revenue), snapshot.monthly.map(item => item.target), `${periodLabel} · ${selectedSegment} · ${selectedRegion}`);
+
+      const colors = ['var(--blue)','var(--green)','var(--orange)','#9aa4af'];
+      let cumulative = 0;
+      const gradients = snapshot.channels.map((item, index) => {
+        const start = cumulative;
+        cumulative += item.share;
+        return `${colors[index % colors.length]} ${start}% ${cumulative}%`;
+      });
+      document.getElementById('channelDonut').style.background = `conic-gradient(${gradients.join(',')})`;
+      document.querySelector('.donut-center strong').textContent = formatBRL(kpis.revenue);
+      document.getElementById('channelList').innerHTML = snapshot.channels.map((item,index) => `
+        <div class="channel"><span class="channel-name"><i class="dot" style="background:${colors[index % colors.length]}"></i>${item.name}</span><strong>${item.share.toLocaleString('pt-BR')}%</strong></div>`).join('');
+
+      const maxRegionShare = Math.max(...snapshot.regions.map(item => item.share),1);
+      document.getElementById('regionBars').innerHTML = snapshot.regions.map(item => `
+        <div class="region-row"><span>${item.name}</span><div class="track"><div class="fill" style="width:${item.share/maxRegionShare*100}%"></div></div><strong>${item.share.toLocaleString('pt-BR')}%</strong></div>`).join('');
+
+      document.getElementById('productRows').innerHTML = snapshot.products.slice(0,4).map(item => `
+        <tr><td>${item.name}</td><td>${formatBRL(item.revenue)}</td><td class="${item.growth >= 0 ? 'positive' : 'negative-text'}">${item.growth >= 0 ? '+' : ''}${item.growth.toLocaleString('pt-BR')}%</td></tr>`).join('');
+    }
+
+    async function refreshDashboard() {
+      const params = new URLSearchParams({
+        segment: document.getElementById('segment').value,
+        region: document.getElementById('region').value,
+        period: String(activePeriod),
+      });
+      try {
+        const response = await fetch(`${API_BASE}/api/dashboard?${params}`);
+        if (!response.ok) throw new Error('Dashboard API unavailable');
+        applySnapshot(await response.json());
+        document.getElementById('apiStatus').textContent = 'Dados simulados · API ativa';
+      } catch (error) {
+        renderLocalDashboard();
+        document.getElementById('apiStatus').textContent = 'Dados simulados · modo local';
+      }
+    }
+
+    function showInsight(key) {
+      const insight = insights[key] || insights.default;
+      document.getElementById('question').textContent = insight.question;
+      document.getElementById('answerLead').innerHTML = insight.lead;
+      document.getElementById('evidenceList').innerHTML = insight.evidence.map(item => `
+        <div class="evidence"><span class="tag">${item[0]}</span><span>${item[1]}</span></div>`).join('');
+      document.getElementById('modeNote').textContent = 'Modo demonstrativo · resposta local de segurança';
+    }
+
+    function localInsightKey(question) {
+      const value = question.toLowerCase();
+      if (value.includes('margem')) return 'margin';
+      if (value.includes('região') || value.includes('regiao')) return 'region';
+      if (value.includes('concentra')) return 'concentration';
+      if (value.includes('executiv') || value.includes('principal')) return 'executive';
+      return 'default';
+    }
+
+    function renderAnalysis(data, question) {
+      document.getElementById('question').textContent = question;
+      document.getElementById('answerLead').textContent = data.answer;
+      const list = document.getElementById('evidenceList');
+      list.innerHTML = '';
+      data.evidence.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'evidence';
+        const tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.textContent = item.type;
+        const text = document.createElement('span');
+        text.textContent = item.text;
+        row.append(tag, text);
+        list.appendChild(row);
+      });
+      const labels = {groq:'Groq conectada',demo:'Modo demo da API',fallback:'Groq indisponível · fallback seguro'};
+      document.getElementById('modeNote').textContent = labels[data.mode] || 'Resposta processada';
+      document.querySelector('.confidence-fill').style.width = data.confidence === 'high' ? '92%' : data.confidence === 'medium' ? '65%' : '35%';
+    }
+
+    async function askData(question, fallbackKey = null) {
+      document.getElementById('question').textContent = question;
+      document.getElementById('answerLead').textContent = 'Analisando os dados filtrados...';
+      document.getElementById('evidenceList').innerHTML = '';
+      const payload = {
+        question,
+        filters: {
+          segment: document.getElementById('segment').value,
+          region: document.getElementById('region').value,
+          period: String(activePeriod),
+        },
+      };
+      try {
+        const response = await fetch(`${API_BASE}/api/analyze`, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) throw new Error('Analyze API unavailable');
+        renderAnalysis(await response.json(), question);
+      } catch (error) {
+        showInsight(fallbackKey || localInsightKey(question));
+      }
+    }
+
+    document.querySelectorAll('.period-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.period-btn').forEach(item => item.classList.toggle('active', item === button));
+        activePeriod = button.dataset.period;
+        refreshDashboard();
+      });
+    });
+
+    document.querySelectorAll('.suggestion').forEach(button => {
+      button.addEventListener('click', () => askData(insights[button.dataset.question].question, button.dataset.question));
+    });
+
+    document.getElementById('executiveBtn').addEventListener('click', () => askData(insights.executive.question, 'executive'));
+    document.getElementById('segment').addEventListener('change', refreshDashboard);
+    document.getElementById('region').addEventListener('change', refreshDashboard);
+
+    document.getElementById('composer').addEventListener('submit', event => {
+      event.preventDefault();
+      const input = document.getElementById('chatInput');
+      const value = input.value.trim();
+      if (!value) return;
+      askData(value);
+      input.value = '';
+    });
+
+    refreshDashboard().then(() => askData('Por que a receita caiu em março?', 'default'));
+  </script>
+</body>
+</html>
